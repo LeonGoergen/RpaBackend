@@ -18,7 +18,7 @@ mongoose.connect("mongodb+srv://leongoergen:Rpa-suitabilitY@rpa.htm7lfo.mongodb.
 // Define a schema and model for questionnaire results
 const resultSchema = new mongoose.Schema({
     questionScores: Object,
-    userIP: String,
+    sessionToken: String,
     timestamp: Date
 });
 const Result = mongoose.model('Result', resultSchema);
@@ -27,13 +27,9 @@ const Result = mongoose.model('Result', resultSchema);
 app.post('/store-results', (req, res) => {
     const newResult = new Result({
         questionScores: req.body.questionScores,
-        userIP: req.body.userIP,
+        sessionToken: req.body.sessionToken,
         timestamp: new Date()
     });
-
-    console.log(newResult['questionScores'])
-    console.log(newResult['userIP'])
-    console.log(newResult['timestamp'])
 
     newResult.save()
         .then(() => res.json('Results added: ' + newResult))
