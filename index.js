@@ -27,7 +27,16 @@ const resultSchema = new mongoose.Schema({
   userToken: String,
   timestamp: Date
 });
+const messageSchema = new mongoose.Schema({
+  userToken: String,
+  name: String,
+  email: String,
+  message: String,
+  timestamp: Date
+});
+
 const Result = mongoose.model('Result', resultSchema);
+const Message = mongoose.model('Message', messageSchema);
 
 app.post('/store-results',
   [
@@ -52,12 +61,51 @@ app.post('/store-results',
     } catch (err) {
       next(err);
     }
-  });
+  }
+);
+
+app.post('/store-message',
+  [
+    body('name').exists().withMessage('Name is required'),
+    body('email').isEmail().withMessage('Email must be valid'),
+    body('message').exists().withMessage('Message is required')
+  ],
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const newMessage = new Message({
+        userToken: req.body.userToken,
+        name: req.body.name,
+        email: req.body.email,
+        message: req.body.message,
+        timestamp: new Date()
+      });
+
+      await newMessage.save();
+      res.json(`Message added: ${newMessage}`);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 app.get('/all-results', async (req, res, next) => {
   try {
     const results = await Result.find();
     res.json(results);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/all-messages', async (req, res, next) => {
+  try {
+    const messages = await Message.find();
+    res.json(messages);
   } catch (err) {
     next(err);
   }
