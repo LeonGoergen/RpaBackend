@@ -34,9 +34,17 @@ const messageSchema = new mongoose.Schema({
   message: String,
   timestamp: Date
 });
+const ratingSchema = new mongoose.Schema({
+  userToken: String,
+  title: String,
+  rating: Number,
+  message: String,
+  timestamp: Date
+});
 
 const Result = mongoose.model('Result', resultSchema);
 const Message = mongoose.model('Message', messageSchema);
+const Rating = mongoose.model('Rating', messageSchema);
 
 app.post('/store-results',
   [
@@ -93,6 +101,35 @@ app.post('/store-message',
   }
 );
 
+app.post('/store-rating',
+    [
+        body('title').exists().withMessage('Title is required'),
+        body('rating').exists().withMessage('Rating is required'),
+        body('message').exists().withMessage('Message is required')
+    ],
+    async (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      try {
+        const newRating = new Rating({
+          userToken: req.body.userToken,
+          title: req.body.title,
+          rating: req.body.rating,
+          message: req.body.message,
+          timestamp: new Date()
+        });
+
+        await newRating.save();
+        res.json(`Rating added: ${newRating}`);
+      } catch (err) {
+        next(err);
+      }
+    }
+);
+
 app.get('/all-results', async (req, res, next) => {
   try {
     const results = await Result.find();
@@ -106,6 +143,15 @@ app.get('/all-messages', async (req, res, next) => {
   try {
     const messages = await Message.find();
     res.json(messages);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/all-ratings', async (req, res, next) => {
+  try {
+    const ratings = await Rating.find();
+    res.json(ratings);
   } catch (err) {
     next(err);
   }
