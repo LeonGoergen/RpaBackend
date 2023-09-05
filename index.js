@@ -16,7 +16,7 @@ const errorHandler = (err, req, res, next) => {
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb+srv://leongoergen:Rpa-suitabilitY@rpa.htm7lfo.mongodb.net/?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect(process.env.MONGODB_URI, {useNewUrlParser: true, useUnifiedTopology: true})
   .catch(error => {
     console.error('Error connecting to MongoDB:', error);
     process.exit(1);
