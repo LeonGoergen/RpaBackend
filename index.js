@@ -44,7 +44,7 @@ const ratingSchema = new mongoose.Schema({
 
 const Result = mongoose.model('Result', resultSchema);
 const Message = mongoose.model('Message', messageSchema);
-const Rating = mongoose.model('Rating', messageSchema);
+const Rating = mongoose.model('Rating', ratingSchema);
 
 app.post('/store-results',
   [
