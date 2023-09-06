@@ -157,6 +157,81 @@ app.get('/all-ratings', async (req, res, next) => {
   }
 });
 
+app.put('/delete-result',
+    [
+      body('id').exists().withMessage('id is required'),
+    ],
+    async (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()});
+      }
+
+      try {
+        const idToDelete = req.body.id;
+        const deletedResult = await Result.findByIdAndRemove(idToDelete);
+
+        if (deletedResult) {
+          res.json({message: `Result with id ${idToDelete} has been deleted.`});
+        } else {
+          res.status(404).json({message: `Result with id ${idToDelete} not found.`});
+        }
+      } catch (err) {
+        next(err);
+      }
+    }
+);
+
+app.put('/delete-message',
+    [
+      body('id').exists().withMessage('id is required'),
+    ],
+    async (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()});
+      }
+
+      try {
+        const idToDelete = req.body.id;
+        const deletedMessage = await Message.findByIdAndRemove(idToDelete);
+
+        if (deletedMessage) {
+          res.json({message: `Message with id ${idToDelete} has been deleted.`});
+        } else {
+          res.status(404).json({message: `Message with id ${idToDelete} not found.`});
+        }
+      } catch (err) {
+        next(err);
+      }
+    }
+);
+
+app.put('/delete-rating',
+    [
+      body('id').exists().withMessage('id is required'),
+    ],
+    async (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()});
+      }
+
+      try {
+        const idToDelete = req.body.id;
+        const deletedRating = await Rating.findByIdAndRemove(idToDelete);
+
+        if (deletedRating) {
+          res.json({message: `Rating with id ${idToDelete} has been deleted.`});
+        } else {
+          res.status(404).json({message: `Rating with id ${idToDelete} not found.`});
+        }
+      } catch (err) {
+        next(err);
+      }
+    }
+);
+
 app.use(errorHandler);
 
 const port = process.env.PORT || 9001;
